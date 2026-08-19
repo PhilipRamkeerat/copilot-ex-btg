@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import CartPage from './CartPage';
 import { CartContext, CartItem } from '../context/CartContext';
@@ -71,5 +72,51 @@ describe('CartPage', () => {
         expect(screen.getByText('Price: $49.99')).toBeInTheDocument();
         expect(screen.getByText('Quantity: 2')).toBeInTheDocument();
         expect(screen.getByText('Quantity: 1')).toBeInTheDocument();
+    });
+
+    it('displays an empty-cart message when there are no items', () => {
+        renderWithCartContext({ ...mockCartContext, cartItems: [] });
+
+        expect(screen.getByText('Your cart is empty.')).toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Checkout' })).not.toBeInTheDocument();
+    });
+
+    it('opens the checkout confirmation when checkout is clicked', async () => {
+        const user = userEvent.setup();
+        renderWithCartContext();
+
+        await user.click(screen.getByRole('button', { name: 'Checkout' }));
+
+        expect(screen.getByTestId('checkout-modal')).toBeInTheDocument();
+    });
+
+    it('closes checkout confirmation when the user cancels', async () => {
+        const user = userEvent.setup();
+        renderWithCartContext();
+
+        await user.click(screen.getByRole('button', { name: 'Checkout' }));
+        await user.click(screen.getByTestId('cancel-checkout'));
+
+        expect(screen.queryByTestId('checkout-modal')).not.toBeInTheDocument();
+        expect(screen.getByText('Your Cart')).toBeInTheDocument();
+    });
+
+    it('clears the cart and displays the processed order after confirmation', async () => {
+        const user = userEvent.setup();
+        renderWithCartContext();
+
+        await user.click(screen.getByRole('button', { name: 'Checkout' }));
+        await user.click(screen.getByTestId('confirm-checkout'));
+
+        expect(mockCartContext.clearCart).toHaveBeenCalledTimes(1);
+        expect(screen.getByText('Your order has been processed!')).toBeInTheDocument();
+        expect(screen.getByText('Test Product 1')).toBeInTheDocument();
+        expect(screen.getByText('Quantity: 2')).toBeInTheDocument();
+    });
+
+    it('throws a useful error when rendered without CartProvider', () => {
+        expect(() => render(<CartPage />)).toThrow(
+            'CartContext must be used within a CartProvider',
+        );
     });
 });

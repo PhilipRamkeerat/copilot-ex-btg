@@ -6,7 +6,7 @@ A modern TypeScript-based shopping website built with React and Vite.
 
 ### Prerequisites
 
-- Node.js (version 18 or higher)
+- Node.js 22.23.0 (recommended for the Vitest 3 test toolchain)
 - npm or yarn
 
 ### Installation
