@@ -42,5 +42,7 @@ describe('LoginPage', () => {
 
         expect(screen.queryByText('Invalid credentials')).not.toBeInTheDocument();
         expect(screen.getByTestId('location')).toHaveTextContent('/admin');
+        expect(screen.getByPlaceholderText('Username')).toHaveValue('');
+        expect(screen.getByPlaceholderText('Password')).toHaveValue('');
     });
 });

@@ -13,6 +13,7 @@ describe('basic page components', () => {
         expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
         expect(screen.getByRole('link', { name: 'Products' })).toHaveAttribute('href', '/products');
         expect(screen.getByRole('link', { name: 'Cart' })).toHaveAttribute('href', '/cart');
+        expect(screen.getByRole('button', { name: 'Cadastrar cliente' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Admin Login' })).toBeInTheDocument();
     });
 
